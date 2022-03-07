@@ -1,4 +1,4 @@
-const { Schema } = require("mongoose");
+const { Schema, model } = require("mongoose");
 
 const PlayerSchema = new Schema({
   name: {
@@ -49,3 +49,5 @@ const PlayerSchema = new Schema({
     maxlength: 7,
   },
 });
+
+const Player = model("Player", PlayerSchema, "players");
