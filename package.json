@@ -2,7 +2,7 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
     "test": "",
     "prepare": "husky install",
@@ -21,9 +21,12 @@
   },
   "dependencies": {
     "chalk": "^4.1.2",
+    "cors": "^2.8.5",
     "debug": "^4.3.3",
     "dotenv": "^16.0.0",
     "express": "^4.17.3",
+    "helmet": "^5.0.2",
+    "morgan": "^1.10.0",
     "nodemon": "^2.0.15"
   }
 }
