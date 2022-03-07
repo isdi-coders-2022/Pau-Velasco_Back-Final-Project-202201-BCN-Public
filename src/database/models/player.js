@@ -51,3 +51,5 @@ const PlayerSchema = new Schema({
 });
 
 const Player = model("Player", PlayerSchema, "players");
+
+module.exports = Player;
