@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "test": "jest",
-    "coverage": "test --coverage --watchAll",
+    "coverage": "jest --coverage --watchAll",
     "prepare": "husky install",
     "start": "node src/index.js",
     "start-dev": "nodemon . -q"
@@ -31,5 +31,14 @@
     "jest": "^27.5.1",
     "morgan": "^1.10.0",
     "nodemon": "^2.0.15"
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.js",
+      "!src/index.js",
+      "!src/server/startServer.js",
+      "!src/server/index.js",
+      "!src/database/index.js"
+    ]
   }
 }
