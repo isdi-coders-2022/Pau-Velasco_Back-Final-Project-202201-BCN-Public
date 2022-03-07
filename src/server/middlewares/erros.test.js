@@ -1,4 +1,4 @@
-const notFoundError = require("./errors");
+const { notFoundError } = require("./errors");
 
 describe("Given a notFoundError middleware", () => {
   describe("When it receives a wrong request", () => {
