@@ -15,4 +15,4 @@ const generalError = (err, req, res, next) => {
   res.status(errorCode).json({ error: true, message: errorMessage });
 };
 
-module.exports = notFoundError;
+module.exports = { notFoundError, generalError };
