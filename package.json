@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "start": "node src/index.js",
+    "start-dev": "nodemon . -q"
   },
   "keywords": [],
   "author": "",
