@@ -23,3 +23,5 @@ const databaseConnect = (connectionString) =>
       resolve();
     });
   });
+
+module.exports = databaseConnect;
