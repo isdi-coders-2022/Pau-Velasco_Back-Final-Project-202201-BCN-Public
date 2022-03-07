@@ -13,3 +13,5 @@ const startServer = (app, port) =>
       reject(error);
     });
   });
+
+module.exports = startServer;
