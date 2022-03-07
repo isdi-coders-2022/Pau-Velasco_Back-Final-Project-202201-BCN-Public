@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "start": "node src/index.js",
+    "start-dev": "nodemon . -q"
   },
   "keywords": [],
   "author": "",
@@ -16,5 +18,12 @@
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-import": "^2.25.4",
     "husky": "^7.0.0"
+  },
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "debug": "^4.3.3",
+    "dotenv": "^16.0.0",
+    "express": "^4.17.3",
+    "nodemon": "^2.0.15"
   }
 }
