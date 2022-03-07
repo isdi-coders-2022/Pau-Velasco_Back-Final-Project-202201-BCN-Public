@@ -6,7 +6,9 @@ const app = require("./server");
 const startServer = require("./server/startServer");
 
 const port = process.env.PORT || 4000;
-const mongoString = process.env.MONGO_STRING(async () => {
+const mongoString = process.env.MONGO_STRING;
+
+(async () => {
   try {
     await startServer(app, port);
     await databaseConnect(mongoString);
