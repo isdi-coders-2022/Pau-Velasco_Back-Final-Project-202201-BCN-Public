@@ -7,4 +7,9 @@ const startServer = (app, port) =>
       debug(chalk.bold.green(`Server listening on ${port}`));
       resolve();
     });
+
+    server.on("error", (error) => {
+      debug(chalk.bold.red(`The server has an error ${error}`));
+      reject(error);
+    });
   });
