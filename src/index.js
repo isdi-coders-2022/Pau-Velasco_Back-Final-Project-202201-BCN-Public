@@ -8,7 +8,7 @@ const port = process.env.PORT || 4000;
 
 (async () => {
   try {
-    startServer(app, port);
+    await startServer(app, port);
   } catch (error) {
     debug(chalk.bold.red(`Error ${error.message}`));
   }
