@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const debug = require("debug")("twitter: database");
+const debug = require("debug")("futsal-stats: database");
 const chalk = require("chalk");
 
 const databaseConnect = (connectionString) =>
