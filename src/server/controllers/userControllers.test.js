@@ -38,3 +38,34 @@ afterAll(() => {
   mongoose.connection.close();
   database.stop();
 });
+
+describe("Given a loginUser controller", () => {
+  describe("When it receives a request with a correct username and correct password", () => {
+    test("Then it should return a token", async () => {
+      const password = "1234";
+      const user = {
+        username: registeredUsername,
+        password,
+      };
+      const userData = {
+        username: registeredUsername,
+        password: registeredPassword,
+      };
+      let token;
+      User.findOne = jest.fn().mockResolvedValue(userData);
+      jwt.sign = jest.fn().mockReturnValue(token);
+      const req = {
+        body: user,
+      };
+      const res = {
+        json: jest.fn(),
+      };
+      const next = jest.fn();
+
+      await loginUser(req, res, next);
+
+      expect(User.findOne).toHaveBeenCalledWith({ username: user.username });
+      expect(res.json).toHaveBeenCalledWith({ token });
+    });
+  });
+});
