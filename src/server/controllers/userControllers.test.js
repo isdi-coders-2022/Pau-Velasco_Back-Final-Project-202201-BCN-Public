@@ -68,4 +68,24 @@ describe("Given a loginUser controller", () => {
       expect(res.json).toHaveBeenCalledWith({ token });
     });
   });
+
+  describe("When it receives a request with a wrong username and correct password", () => {
+    test("Then it should return a 404 status with an error", async () => {
+      const user = {
+        password: "1234",
+      };
+
+      const req = {
+        body: user,
+      };
+      const next = jest.fn();
+      const expectedError = new Error("Wrong username, user not found");
+      expectedError.code = 404;
+
+      User.findOne = jest.fn().mockResolvedValue(user.username);
+      await loginUser(req, null, next);
+
+      expect(next).toHaveBeenCalledWith(expectedError);
+    });
+  });
 });
