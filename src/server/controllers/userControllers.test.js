@@ -14,6 +14,7 @@ beforeAll(async () => {
   database = await MongoMemoryServer.create();
   const uri = database.getUri();
   await databaseConnect(uri);
+  jest.resetAllMocks();
 });
 
 let registeredUsername;
@@ -83,6 +84,27 @@ describe("Given a loginUser controller", () => {
       expectedError.code = 404;
 
       User.findOne = jest.fn().mockResolvedValue(user.username);
+      await loginUser(req, null, next);
+
+      expect(next).toHaveBeenCalledWith(expectedError);
+    });
+  });
+
+  describe("When it receives a request with a correct username and wrong password", () => {
+    test("Then it should return a 401 status with an error", async () => {
+      const user = {
+        username: "Lionel",
+        password: "1234",
+      };
+      const req = {
+        body: user,
+      };
+      const next = jest.fn();
+      const expectedError = new Error("Wrong password");
+      expectedError.code = 401;
+      bcrypt.compare = jest.fn().mockResolvedValue();
+      User.findOne = jest.fn().mockResolvedValue(user.username);
+
       await loginUser(req, null, next);
 
       expect(next).toHaveBeenCalledWith(expectedError);
