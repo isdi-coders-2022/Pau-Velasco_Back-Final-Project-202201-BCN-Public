@@ -56,4 +56,25 @@ describe("Given a /login endpoint", () => {
       expect(body).toHaveProperty("token");
     });
   });
+
+  describe("When it recevies a POST request with a wrong username", () => {
+    test("Then it should respond with a 401", async () => {
+      const user = {
+        username: "afsjkdl",
+        password: "user1",
+      };
+      const expectedError = {
+        error: true,
+        message: "Wrong username, user not found",
+      };
+
+      const { body } = await request(app)
+        .post("/user/login")
+        .send(user)
+        .expect(404);
+
+      expect(body).toHaveProperty("message", expectedError.message);
+      expect(body).toHaveProperty("error", expectedError.error);
+    });
+  });
 });
