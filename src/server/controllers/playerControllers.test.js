@@ -89,4 +89,17 @@ describe("Given a createPlayer controller", () => {
       expect(res.json).toHaveBeenCalled();
     });
   });
+
+  describe("When it receives a request with a wrong player", () => {
+    test("Then it should return an error", async () => {
+      const res = {
+        json: jest.fn(),
+      };
+      const next = jest.fn();
+
+      await createPlayer(null, res, next);
+
+      expect(next).toHaveBeenCalled();
+    });
+  });
 });
