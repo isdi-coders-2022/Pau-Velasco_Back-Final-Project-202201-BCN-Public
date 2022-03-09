@@ -77,4 +77,25 @@ describe("Given a /login endpoint", () => {
       expect(body).toHaveProperty("error", expectedError.error);
     });
   });
+
+  describe("When it recevies a POST request with a wrong password", () => {
+    test("Then it should respond with a 401", async () => {
+      const user = {
+        username: "user1",
+        password: "fdasjo",
+      };
+      const expectedError = {
+        error: true,
+        message: "Wrong password",
+      };
+
+      const { body } = await request(app)
+        .post("/user/login")
+        .send(user)
+        .expect(401);
+
+      expect(body).toHaveProperty("message", expectedError.message);
+      expect(body).toHaveProperty("error", expectedError.error);
+    });
+  });
 });
