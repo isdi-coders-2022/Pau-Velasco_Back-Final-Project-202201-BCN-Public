@@ -8,8 +8,6 @@ const databaseConnect = require("../../database/index");
 const createPlayer = require("./playerControllers");
 const Player = require("../../database/models/player");
 
-jest.mock("../../database/models/User");
-
 let database;
 let token;
 
