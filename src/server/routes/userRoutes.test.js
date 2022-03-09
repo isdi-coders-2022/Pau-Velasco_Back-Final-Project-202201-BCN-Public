@@ -15,9 +15,9 @@ beforeAll(async () => {
   await databaseConnect(connectionString);
 });
 
-afterAll(async () => {
-  await mongoose.connection.close();
-  await mongoServer.stop();
+afterAll(() => {
+  mongoose.connection.close();
+  mongoServer.stop();
 });
 
 beforeEach(async () => {
