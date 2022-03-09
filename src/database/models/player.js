@@ -48,6 +48,10 @@ const PlayerSchema = new Schema({
     required: true,
     maxlength: 7,
   },
+  photo: {
+    type: String,
+    default: "",
+  },
 });
 
 const Player = model("Player", PlayerSchema, "players");
