@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 
-const authorization = (req, res, next) => {
+const auth = (req, res, next) => {
   const headerAuthorization = req.header("authorization");
   if (!headerAuthorization) {
     const error = new Error("Token missing");
@@ -16,3 +16,5 @@ const authorization = (req, res, next) => {
     return next(error);
   }
 };
+
+module.exports = auth;
