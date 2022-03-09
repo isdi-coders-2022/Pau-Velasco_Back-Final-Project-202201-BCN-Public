@@ -1,7 +1,10 @@
+require("dotenv").config();
 const { MongoMemoryServer } = require("mongodb-memory-server");
 const mongoose = require("mongoose");
-const connectToMongoDB = require("../../database");
+const request = require("supertest");
+const databaseConnect = require("../../database");
 const User = require("../../database/models/user");
+const app = require("../index");
 
 let mongoServer;
 
@@ -9,7 +12,7 @@ beforeAll(async () => {
   mongoServer = await MongoMemoryServer.create();
   const connectionString = mongoServer.getUri();
 
-  await connectToMongoDB(connectionString);
+  await databaseConnect(connectionString);
 });
 
 afterAll(async () => {
@@ -20,7 +23,7 @@ afterAll(async () => {
 beforeEach(async () => {
   await User.create({
     username: "user1",
-    password: "user1",
+    password: "$2b$10$vQcjA2ldvcvUuGTil.Jp6uLgNoAZvVtmFFR1hHH4iKHz4zqfvl7oe",
     teamName: "team1",
     players: [],
   });
@@ -35,4 +38,22 @@ beforeEach(async () => {
 
 afterEach(async () => {
   await User.deleteMany({});
+});
+
+describe("Given a /login endpoint", () => {
+  describe("When it receives a POST request with a correct username and correct password", () => {
+    test("Then it should return a token", async () => {
+      const user = {
+        username: "user1",
+        password: "user1",
+      };
+
+      const { body } = await request(app)
+        .post("/user/login")
+        .send(user)
+        .expect(200);
+
+      expect(body).toHaveProperty("token");
+    });
+  });
 });
