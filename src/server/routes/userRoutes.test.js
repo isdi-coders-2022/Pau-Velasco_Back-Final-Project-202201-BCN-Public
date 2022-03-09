@@ -132,4 +132,18 @@ describe("Given a /load-user endpoint", () => {
       expect(expectedBody).toHaveProperty("user", expectedUser);
     });
   });
+
+  describe("When it receives a POST request with a wrong token", () => {
+    test("Then it should respond with the user", async () => {
+      const expectedError = { error: true, message: "jwt malformed" };
+
+      const { body } = await request(app)
+        .post("/user/load-user")
+        .set("authorization", `Bearer fadsfdsafasdfsda`)
+        .expect(401);
+
+      expect(body).toHaveProperty("error", expectedError.error);
+      expect(body).toHaveProperty("message", expectedError.message);
+    });
+  });
 });
