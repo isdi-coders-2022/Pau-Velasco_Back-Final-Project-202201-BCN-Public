@@ -3,6 +3,7 @@ name: Testing on push
 on: push
 env:
   JWT_SECRET: ${{secrets.JWT_SECRET}}
+  MONGO_STRING: ${{MONGO_STRING}}
 
 jobs:
   test:
