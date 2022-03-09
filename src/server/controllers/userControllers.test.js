@@ -5,11 +5,13 @@ const { MongoMemoryServer } = require("mongodb-memory-server");
 const { default: mongoose } = require("mongoose");
 const User = require("../../database/models/user");
 const databaseConnect = require("../../database/index");
-const { loginUser } = require("./userControllers");
+const { loginUser, loadUser } = require("./userControllers");
 
 jest.mock("../../database/models/user");
 
 let database;
+let token;
+
 beforeAll(async () => {
   database = await MongoMemoryServer.create();
   const uri = database.getUri();
@@ -23,6 +25,10 @@ let registeredPassword;
 beforeEach(async () => {
   registeredPassword = await bcrypt.hash("1234", 3);
   registeredUsername = "Lionel";
+  const userDataToken = {
+    username: registeredUsername,
+  };
+  token = jwt.sign(userDataToken, process.env.JWT_SECRET);
 
   await User.create({
     username: registeredUsername,
@@ -52,7 +58,7 @@ describe("Given a loginUser controller", () => {
         username: registeredUsername,
         password: registeredPassword,
       };
-      let token;
+
       User.findOne = jest.fn().mockResolvedValue(userData);
       jwt.sign = jest.fn().mockReturnValue(token);
       const req = {
@@ -108,6 +114,33 @@ describe("Given a loginUser controller", () => {
       await loginUser(req, null, next);
 
       expect(next).toHaveBeenCalledWith(expectedError);
+    });
+  });
+});
+
+describe("Given a loadUser controller", () => {
+  describe("When it receives a request with a token in his header", () => {
+    test("Then it should return an user", async () => {
+      const username = "Lionel";
+      const user = {
+        username: "Lionel",
+        password: "1234",
+      };
+      User.findOne = jest.fn().mockResolvedValue(user);
+      jwt.sign = jest.fn().mockReturnValue(token);
+      const req = {
+        header: jest.fn().mockReturnValue(`Bearer ${token}`),
+      };
+
+      const res = {
+        json: jest.fn(),
+      };
+      const next = jest.fn();
+
+      await loadUser(req, res, next);
+
+      expect(User.findOne).toHaveBeenCalledWith({ username });
+      expect(res.json).toHaveBeenCalledWith({ user });
     });
   });
 });
