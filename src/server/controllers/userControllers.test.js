@@ -5,7 +5,8 @@ const { MongoMemoryServer } = require("mongodb-memory-server");
 const { default: mongoose } = require("mongoose");
 const User = require("../../database/models/user");
 const databaseConnect = require("../../database/index");
-const { loginUser, loadUser } = require("./userControllers");
+const { loginUser } = require("./userControllers");
+const Player = require("../../database/models/player");
 
 jest.mock("../../database/models/user");
 
@@ -34,6 +35,21 @@ beforeEach(async () => {
     username: registeredUsername,
     password: registeredPassword,
     teamName: "dsfd",
+    players: [1],
+  });
+
+  await Player.create({
+    id: 1,
+    name: "Cristiano",
+    number: 7,
+    goals: 21,
+    assists: 3,
+    yellowCards: 4,
+    redCards: 1,
+    totalMatches: 21,
+    position: "Alero",
+    photo:
+      "https://img.uefa.com/imgml/TP/players/1/2022/324x324/63706.jpg?imwidth=36",
   });
 });
 
@@ -114,33 +130,6 @@ describe("Given a loginUser controller", () => {
       await loginUser(req, null, next);
 
       expect(next).toHaveBeenCalledWith(expectedError);
-    });
-  });
-});
-
-describe("Given a loadUser controller", () => {
-  describe("When it receives a request with a token in his header", () => {
-    test("Then it should return an user", async () => {
-      const username = "Lionel";
-      const user = {
-        username: "Lionel",
-        password: "1234",
-      };
-      User.findOne = jest.fn().mockResolvedValue(user);
-      jwt.sign = jest.fn().mockReturnValue(token);
-      const req = {
-        header: jest.fn().mockReturnValue(`Bearer ${token}`),
-      };
-
-      const res = {
-        json: jest.fn(),
-      };
-      const next = jest.fn();
-
-      await loadUser(req, res, next);
-
-      expect(User.findOne).toHaveBeenCalledWith({ username });
-      expect(res.json).toHaveBeenCalledWith({ user });
     });
   });
 });
