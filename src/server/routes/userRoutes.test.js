@@ -6,6 +6,7 @@ const jwt = require("jsonwebtoken");
 const databaseConnect = require("../../database");
 const User = require("../../database/models/user");
 const app = require("../index");
+const Player = require("../../database/models/player");
 
 let mongoServer;
 let token1;
@@ -27,7 +28,7 @@ beforeEach(async () => {
     username: "user1",
     password: "$2b$10$vQcjA2ldvcvUuGTil.Jp6uLgNoAZvVtmFFR1hHH4iKHz4zqfvl7oe",
     teamName: "team1",
-    players: [],
+    players: ["6229c27236ee9c9c2b458879"],
   });
 
   const userDataToken = {
@@ -41,6 +42,20 @@ beforeEach(async () => {
     password: "user2",
     teamName: "team2",
     players: [],
+  });
+
+  await Player.create({
+    name: "Cristiano",
+    number: 7,
+    goals: 21,
+    assists: 3,
+    yellowCards: 4,
+    redCards: 1,
+    totalMatches: 21,
+    position: "Alero",
+    photo:
+      "https://img.uefa.com/imgml/TP/players/1/2022/324x324/63706.jpg?imwidth=36",
+    id: "6229c27236ee9c9c2b458879",
   });
 });
 
@@ -116,15 +131,15 @@ describe("Given a /load-user endpoint", () => {
         teamName: "team1",
         password:
           "$2b$10$vQcjA2ldvcvUuGTil.Jp6uLgNoAZvVtmFFR1hHH4iKHz4zqfvl7oe",
-        players: [],
+        players: ["6229c27236ee9c9c2b458879"],
       };
 
       const { body } = await request(app)
-        .post("/user/load-user")
+        .get("/user/load-user")
         .set("authorization", `Bearer ${token1}`)
         .expect(200);
 
-      const { id, ...newBody } = body.user;
+      const { id, ...newBody } = body;
       const expectedBody = {
         user: newBody,
       };
@@ -138,8 +153,8 @@ describe("Given a /load-user endpoint", () => {
       const expectedError = { error: true, message: "jwt malformed" };
 
       const { body } = await request(app)
-        .post("/user/load-user")
-        .set("authorization", `Bearer fadsfdsafasdfsda`)
+        .get("/user/load-user")
+        .set("authorization", `Bearer 24243fsadsfd`)
         .expect(401);
 
       expect(body).toHaveProperty("error", expectedError.error);
@@ -152,7 +167,46 @@ describe("Given a /load-user endpoint", () => {
       const expectedError = { error: true, message: "Token missing" };
 
       const { body } = await request(app)
-        .post("/user/load-user")
+        .get("/user/load-user")
+        .set("authorization", "")
+        .expect(401);
+
+      expect(body).toHaveProperty("error", expectedError.error);
+      expect(body).toHaveProperty("message", expectedError.message);
+    });
+  });
+});
+
+describe("Given a /load-user-players endpoint", () => {
+  describe("When it receives a POST request with a token", () => {
+    test("Then it should respond with the players", async () => {
+      await request(app)
+        .get("/user/load-user-players")
+        .set("authorization", `Bearer ${token1}`)
+        .expect(200);
+    });
+  });
+
+  describe("When it receives a POST request with a wrong token", () => {
+    test("Then it should respond with an error and the message jwt malformed", async () => {
+      const expectedError = { error: true, message: "jwt malformed" };
+
+      const { body } = await request(app)
+        .get("/user/load-user-players")
+        .set("authorization", `Bearer 24243fsadsfd`)
+        .expect(401);
+
+      expect(body).toHaveProperty("error", expectedError.error);
+      expect(body).toHaveProperty("message", expectedError.message);
+    });
+  });
+
+  describe("When it receives a POST request without token", () => {
+    test("Then it should respond with an error and the message Token missing", async () => {
+      const expectedError = { error: true, message: "Token missing" };
+
+      const { body } = await request(app)
+        .get("/user/load-user-players")
         .set("authorization", "")
         .expect(401);
 
