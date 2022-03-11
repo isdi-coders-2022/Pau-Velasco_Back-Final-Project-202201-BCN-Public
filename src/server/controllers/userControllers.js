@@ -35,7 +35,16 @@ const loadUser = async (req, res) => {
   const { username } = jwt.decode(token);
   const user = await User.findOne({ username });
 
-  res.json({ user });
+  res.json(user);
 };
 
-module.exports = { loginUser, loadUser };
+const loadUserPlayers = async (req, res) => {
+  const headerAuthorization = req.header("authorization");
+  const token = headerAuthorization.replace("Bearer ", "");
+  const { username } = jwt.decode(token);
+  const user = await User.findOne({ username }).populate("players");
+
+  res.json(user.players);
+};
+
+module.exports = { loginUser, loadUserPlayers, loadUser };
