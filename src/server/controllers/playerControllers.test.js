@@ -3,7 +3,6 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { MongoMemoryServer } = require("mongodb-memory-server");
 const { default: mongoose } = require("mongoose");
-const { default: ObjectID } = require("bson-objectid");
 const User = require("../../database/models/user");
 const databaseConnect = require("../../database/index");
 const { createPlayer, deletePlayer } = require("./playerControllers");
