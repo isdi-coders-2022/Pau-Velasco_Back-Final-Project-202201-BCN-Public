@@ -24,13 +24,11 @@ const createPlayer = async (req, res, next) => {
 };
 
 const deletePlayer = async (req, res, next) => {
-  const headerAuthorization = req.header("authorization");
-  const token = headerAuthorization.replace("Bearer ", "");
-  const { username } = jwt.decode(token);
-
   try {
+    const headerAuthorization = req.header("authorization");
+    const token = headerAuthorization.replace("Bearer ", "");
+    const { username } = jwt.decode(token);
     const { id } = req.params;
-
     const user = await User.findOne({ username });
     const userUpdated = await User.findOneAndUpdate(
       { username },
@@ -39,6 +37,7 @@ const deletePlayer = async (req, res, next) => {
       },
       { new: true }
     );
+
     if (!userUpdated) {
       const error = new Error("This player doesn't belong to your user");
       error.code = 403;
