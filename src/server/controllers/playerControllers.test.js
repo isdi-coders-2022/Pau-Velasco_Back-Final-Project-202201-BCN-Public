@@ -3,9 +3,10 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { MongoMemoryServer } = require("mongodb-memory-server");
 const { default: mongoose } = require("mongoose");
+const { default: ObjectID } = require("bson-objectid");
 const User = require("../../database/models/user");
 const databaseConnect = require("../../database/index");
-const { createPlayer } = require("./playerControllers");
+const { createPlayer, deletePlayer } = require("./playerControllers");
 const Player = require("../../database/models/player");
 
 let database;
@@ -33,6 +34,22 @@ beforeEach(async () => {
     username: registeredUsername,
     password: registeredPassword,
     teamName: "dsfd",
+    id: "12",
+    players: [ObjectID("123456789012"), ObjectID("234567890123")],
+  });
+
+  await Player.create({
+    name: "Benzema",
+    number: 7,
+    goals: 21,
+    assists: 3,
+    yellowCards: 4,
+    redCards: 1,
+    totalMatches: 21,
+    position: "Pívote",
+    photo:
+      "https://img.uefa.com/imgml/TP/players/1/2022/324x324/63706.jpg?imwidth=36",
+    id: "1",
   });
 });
 
@@ -59,13 +76,15 @@ describe("Given a createPlayer controller", () => {
         position: "Alero",
         photo:
           "https://img.uefa.com/imgml/TP/players/1/2022/324x324/63706.jpg?imwidth=36",
+        id: "1",
       };
 
       const userData = {
         username: registeredUsername,
         password: registeredPassword,
         teamName: "hola",
-        players: [],
+        id: "12",
+        players: [ObjectID("123456789012"), ObjectID("234567890123")],
       };
 
       Player.create = jest.fn().mockResolvedValue("123");
@@ -98,6 +117,78 @@ describe("Given a createPlayer controller", () => {
       await createPlayer(null, res, next);
 
       expect(next).toHaveBeenCalled();
+    });
+  });
+});
+
+describe("Given a deleteUser controller", () => {
+  describe("When it's instantiated with a token and player id in the request", () => {
+    test("Then it should delete the player id", async () => {
+      const playerId = "123456789012";
+
+      const userData = {
+        username: registeredUsername,
+        password: registeredPassword,
+        teamName: "hola",
+        players: [ObjectID("123456789012"), ObjectID("234567890123")],
+      };
+
+      const updatedUser = {
+        username: registeredUsername,
+        password: registeredPassword,
+        teamName: "hola",
+        players: [ObjectID("234567890123")],
+      };
+
+      User.findOne = jest.fn().mockResolvedValue(userData);
+      User.findOneAndUpdate = jest.fn().mockResolvedValue(updatedUser);
+      Player.findByIdAndDelete = jest.fn().mockResolvedValue("123");
+      jwt.decode = jest.fn().mockReturnValue(token);
+
+      const req = {
+        header: jest.fn().mockReturnValue(`Bearer ${token}`),
+        params: playerId,
+      };
+      const res = {
+        json: jest.fn(),
+      };
+      const next = jest.fn();
+
+      await deletePlayer(req, res, next);
+
+      expect(res.json).toHaveBeenCalled();
+    });
+  });
+
+  describe("When it receives a req with indvalid req", () => {
+    test("Then it should call an error with the text 'This player doesn't belong to your user'", async () => {
+      const playerId = "123456789012324";
+      const error = new Error("This player doesn't belong to your user");
+
+      const userData = {
+        username: registeredUsername,
+        password: registeredPassword,
+        teamName: "hola",
+        players: [ObjectID("123456789012"), ObjectID("234567890123")],
+      };
+
+      User.findOne = jest.fn().mockResolvedValue(userData);
+      User.findOneAndUpdate = jest.fn().mockResolvedValue(null);
+      Player.findByIdAndDelete = jest.fn().mockResolvedValue("123");
+      jwt.decode = jest.fn().mockReturnValue(token);
+
+      const req = {
+        header: jest.fn().mockReturnValue(`Bearer ${token}`),
+        params: playerId,
+      };
+      const res = {
+        json: jest.fn(),
+      };
+      const next = jest.fn();
+
+      await deletePlayer(req, res, next);
+
+      expect(next).toHaveBeenCalledWith(error);
     });
   });
 });
