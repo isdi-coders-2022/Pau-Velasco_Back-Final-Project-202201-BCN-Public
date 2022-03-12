@@ -230,4 +230,15 @@ describe("Given a deleteUser controller", () => {
       expect(next).toHaveBeenCalledWith(error);
     });
   });
+
+  describe("When it receives a req request with invalid token", () => {
+    test("Then it should call next", async () => {
+      jwt.decode = jest.fn().mockReturnValue(null);
+      const next = jest.fn();
+
+      await deletePlayer(null, null, next);
+
+      expect(next).toHaveBeenCalled();
+    });
+  });
 });
