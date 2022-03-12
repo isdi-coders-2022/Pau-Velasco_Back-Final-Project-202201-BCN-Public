@@ -160,7 +160,7 @@ describe("Given a deleteUser controller", () => {
     });
   });
 
-  describe("When it receives a req with indvalid req", () => {
+  describe("When it receives a req with indvalid request", () => {
     test("Then it should call an error with the text 'This player doesn't belong to your user'", async () => {
       const playerId = "123456789012324";
       const error = new Error("This player doesn't belong to your user");
@@ -175,6 +175,45 @@ describe("Given a deleteUser controller", () => {
       User.findOne = jest.fn().mockResolvedValue(userData);
       User.findOneAndUpdate = jest.fn().mockResolvedValue(null);
       Player.findByIdAndDelete = jest.fn().mockResolvedValue("123");
+      jwt.decode = jest.fn().mockReturnValue(token);
+
+      const req = {
+        header: jest.fn().mockReturnValue(`Bearer ${token}`),
+        params: playerId,
+      };
+      const res = {
+        json: jest.fn(),
+      };
+      const next = jest.fn();
+
+      await deletePlayer(req, res, next);
+
+      expect(next).toHaveBeenCalledWith(error);
+    });
+  });
+
+  describe("When it receives a req request with invalid id", () => {
+    test("Then it should call next with the error 'This player doesn't exist'", async () => {
+      const playerId = "1234fasd";
+      const error = new Error("This player doesn't exist");
+
+      const userData = {
+        username: registeredUsername,
+        password: registeredPassword,
+        teamName: "hola",
+        players: [ObjectID("123456789012"), ObjectID("234567890123")],
+      };
+
+      const updatedUser = {
+        username: registeredUsername,
+        password: registeredPassword,
+        teamName: "hola",
+        players: [ObjectID("234567890123")],
+      };
+
+      User.findOne = jest.fn().mockResolvedValue(userData);
+      User.findOneAndUpdate = jest.fn().mockResolvedValue(updatedUser);
+      Player.findByIdAndDelete = jest.fn().mockResolvedValue(null);
       jwt.decode = jest.fn().mockReturnValue(token);
 
       const req = {
