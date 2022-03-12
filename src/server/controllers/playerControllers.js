@@ -15,7 +15,7 @@ const createPlayer = async (req, res, next) => {
     user.players.push(newPlayer);
     await user.save();
 
-    res.json(user);
+    res.status(201).json(newPlayer);
   } catch (error) {
     error.message = "Error, can't create the player";
     error.code = 400;

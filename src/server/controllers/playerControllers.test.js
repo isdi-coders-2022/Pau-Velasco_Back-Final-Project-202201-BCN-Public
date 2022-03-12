@@ -96,6 +96,7 @@ describe("Given a createPlayer controller", () => {
         body: newPlayer,
       };
       const res = {
+        status: jest.fn().mockReturnThis(201),
         json: jest.fn(),
       };
       const next = jest.fn();
@@ -104,6 +105,7 @@ describe("Given a createPlayer controller", () => {
       await createPlayer(req, res, next);
 
       expect(res.json).toHaveBeenCalled();
+      expect(res.status).toHaveBeenCalledWith(201);
     });
   });
 
