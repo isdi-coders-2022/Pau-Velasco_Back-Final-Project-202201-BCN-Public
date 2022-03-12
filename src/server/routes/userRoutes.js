@@ -1,5 +1,8 @@
 const express = require("express");
-const createPlayer = require("../controllers/playerControllers");
+const {
+  createPlayer,
+  deletePlayer,
+} = require("../controllers/playerControllers");
 const {
   loginUser,
   loadUserPlayers,
@@ -13,5 +16,6 @@ router.post("/login", loginUser);
 router.get("/load-user-players", auth, loadUserPlayers);
 router.post("/create-player", createPlayer);
 router.get("/load-user", auth, loadUser);
+router.delete("/delete/:id", deletePlayer);
 
 module.exports = router;
