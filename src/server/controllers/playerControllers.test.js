@@ -5,7 +5,7 @@ const { MongoMemoryServer } = require("mongodb-memory-server");
 const { default: mongoose } = require("mongoose");
 const User = require("../../database/models/user");
 const databaseConnect = require("../../database/index");
-const createPlayer = require("./playerControllers");
+const { createPlayer } = require("./playerControllers");
 const Player = require("../../database/models/player");
 
 let database;
