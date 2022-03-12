@@ -55,7 +55,6 @@ beforeEach(async () => {
     position: "Alero",
     photo:
       "https://img.uefa.com/imgml/TP/players/1/2022/324x324/63706.jpg?imwidth=36",
-    id: "6229c27236ee9c9c2b458879",
   });
 });
 
@@ -87,6 +86,19 @@ describe("Given a player/create/ endpoint", () => {
 
       const { id, ...expectedBody } = body;
       expect(expectedBody).toEqual(newPlayer);
+    });
+  });
+});
+
+describe("Given a player/delete/ endpoint", () => {
+  describe("When it receives a DELETE request with an id", () => {
+    test("Then it should delete the player", async () => {
+      const { id } = await Player.findOne({ name: "Cristiano" });
+
+      await request(app)
+        .delete(`/player/delete/${id}`)
+        .set("authorization", `Bearer ${token1}`)
+        .expect(200);
     });
   });
 });
