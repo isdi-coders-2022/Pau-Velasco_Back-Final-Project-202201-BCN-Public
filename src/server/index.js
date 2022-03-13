@@ -8,10 +8,11 @@ const playerRouter = require("./routes/playerRoutes");
 
 const app = express();
 
+app.use(helmet());
 app.use(cors());
 app.use(morgan("dev"));
 app.use(express.json());
-app.use(helmet());
+app.use(express.static("public"));
 
 app.use("/user", userRouter);
 app.use("/player", playerRouter);
