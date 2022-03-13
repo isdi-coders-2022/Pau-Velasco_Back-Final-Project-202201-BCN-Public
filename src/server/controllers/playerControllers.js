@@ -1,22 +1,65 @@
 const jwt = require("jsonwebtoken");
+const { initializeApp } = require("firebase/app");
+const {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL,
+} = require("firebase/storage");
+const path = require("path");
+const fs = require("fs");
 const Player = require("../../database/models/player");
 const User = require("../../database/models/user");
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBPiBUPWvz-7MbKPmOpI1Kikzd7EioUrAU",
+  authDomain: "futsalstats-dd617.firebaseapp.com",
+  projectId: "futsalstats-dd617",
+  storageBucket: "futsalstats-dd617.appspot.com",
+  messagingSenderId: "1072061214810",
+  appId: "1:1072061214810:web:8817ba8be09dc504a06863",
+};
+
+const fireBaseApp = initializeApp(firebaseConfig);
+const storage = getStorage(fireBaseApp);
 
 const createPlayer = async (req, res, next) => {
   try {
     const { body } = req;
-    const newPlayer = await Player.create(body);
 
-    const headerAuthorization = req.header("authorization");
-    const token = headerAuthorization.replace("Bearer ", "");
-    const { username } = jwt.decode(token);
+    const oldFileName = path.join("uploads", req.file.filename);
+    const newFileName = path.join("uploads", req.body.name);
+    fs.rename(oldFileName, newFileName, (error) => {
+      if (error) {
+        next(error);
+      }
+    });
+    fs.readFile(newFileName, async (error, file) => {
+      if (error) {
+        next(error);
+      } else {
+        const storageRef = ref(storage, body.name);
+        await uploadBytes(storageRef, file);
+        const firebaseFileURL = await getDownloadURL(storageRef);
+        body.photo = firebaseFileURL;
 
-    const user = await User.findOne({ username });
-    user.players.push(newPlayer);
-    await user.save();
+        const newPlayer = await Player.create(body);
+        const headerAuthorization = req.header("authorization");
+        const token = headerAuthorization.replace("Bearer ", "");
+        const { username } = jwt.decode(token);
 
-    res.status(201).json(newPlayer);
+        const user = await User.findOne({ username });
+        user.players.push(newPlayer);
+        await user.save();
+
+        res.status(201).json(newPlayer);
+      }
+    });
   } catch (error) {
+    fs.unlink(path.join("uploads", req.file.filename), () => {
+      error.code = 400;
+      next(error);
+    });
     error.message = "Error, can't create the player";
     error.code = 400;
     next(error);
