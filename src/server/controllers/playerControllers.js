@@ -42,7 +42,6 @@ const createPlayer = async (req, res, next) => {
         await uploadBytes(storageRef, file);
         const firebaseFileURL = await getDownloadURL(storageRef);
         body.photo = firebaseFileURL;
-
         const newPlayer = await Player.create(body);
         const headerAuthorization = req.header("authorization");
         const token = headerAuthorization.replace("Bearer ", "");
