@@ -23,6 +23,7 @@ beforeAll(async () => {
   database = await MongoMemoryServer.create();
   const uri = database.getUri();
   await databaseConnect(uri);
+  jest.resetAllMocks();
 });
 
 let registeredUsername;
@@ -70,7 +71,7 @@ afterAll(async () => {
 
 describe("Given a createPlayer controller", () => {
   describe("When it's instantiated with a new player in the body and a photo in the file", () => {
-    test.only("Then it should call json with the new player and the firebase url in the photo property", async () => {
+    test("Then it should call json with the new player and the firebase url in the photo property", async () => {
       const newPlayer = {
         name: "Cristiano",
         number: 7,
@@ -122,6 +123,47 @@ describe("Given a createPlayer controller", () => {
       await createPlayer(req, res, next);
 
       expect(res.json).toHaveBeenCalled();
+    });
+  });
+
+  describe("When it's instantiated with a new player in the body and a photo in the file, and has an error on fs.rename", () => {
+    test("Then it should should call next with an error", async () => {
+      const newPlayer = {
+        name: "Cristiano",
+        number: 7,
+        goals: 21,
+        assists: 3,
+        yellowCards: 4,
+        redCards: 1,
+        totalMatches: 21,
+        position: "Alero",
+        id: "1",
+      };
+      const newFile = {
+        fieldname: "photo",
+        originalname: "cristianito.jpeg",
+        encoding: "7bit",
+        mimetype: "image/jpeg",
+        destination: "uploads/",
+        filename: "93ec034d18753a982e662bc2fdf9a584",
+        path: "uploads/93ec034d18753a982e662bc2fdf9a584",
+        size: 8750,
+      };
+
+      const req = {
+        header: jest.fn().mockReturnValue(`Bearer ${token}`),
+        body: newPlayer,
+        file: newFile,
+      };
+      const next = jest.fn();
+
+      jest.spyOn(fs, "readFile").mockImplementation((file, callback) => {
+        callback("error", null);
+      });
+
+      await createPlayer(req, null, next);
+
+      expect(next).toHaveBeenCalled();
     });
   });
 

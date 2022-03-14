@@ -39,10 +39,10 @@ const createPlayer = async (req, res, next) =>
       fs.readFile(newFileName, async (error, file) => {
         if (error) {
           next(error);
+          resolve();
         } else {
           const storageRef = ref(storage, body.name);
           await uploadBytes(storageRef, file);
-
           const firebaseFileURL = await getDownloadURL(storageRef);
           body.photo = firebaseFileURL;
 
