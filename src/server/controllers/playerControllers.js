@@ -34,24 +34,27 @@ const createPlayer = async (req, res, next) => {
         next(error);
       }
     });
+
     fs.readFile(newFileName, async (error, file) => {
       if (error) {
         next(error);
       } else {
         const storageRef = ref(storage, body.name);
         await uploadBytes(storageRef, file);
+
         const firebaseFileURL = await getDownloadURL(storageRef);
         body.photo = firebaseFileURL;
+
         const newPlayer = await Player.create(body);
         const headerAuthorization = req.header("authorization");
         const token = headerAuthorization.replace("Bearer ", "");
         const { username } = jwt.decode(token);
-
         const user = await User.findOne({ username });
         user.players.push(newPlayer);
         await user.save();
 
-        res.status(201).json(newPlayer);
+        res.status(201);
+        res.json(newPlayer);
       }
     });
   } catch (error) {
