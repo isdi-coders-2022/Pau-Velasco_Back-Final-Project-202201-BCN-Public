@@ -23,47 +23,57 @@ const firebaseConfig = {
 const fireBaseApp = initializeApp(firebaseConfig);
 const storage = getStorage(fireBaseApp);
 
-const createPlayer = async (req, res, next) => {
-  try {
-    const { body } = req;
+const createPlayer = async (req, res, next) =>
+  new Promise((resolve) => {
+    try {
+      const { body } = req;
 
-    const oldFileName = path.join("uploads", req.file.filename);
-    const newFileName = path.join("uploads", req.body.name);
-    fs.rename(oldFileName, newFileName, (error) => {
-      if (error) {
+      const oldFileName = path.join("uploads", req.file.filename);
+      const newFileName = path.join("uploads", req.body.name);
+      fs.rename(oldFileName, newFileName, (error) => {
+        if (error) {
+          next(error);
+          resolve();
+        }
+      });
+
+      fs.readFile(newFileName, async (error, file) => {
+        if (error) {
+          next(error);
+          resolve();
+        } else {
+          const storageRef = ref(storage, body.name);
+          await uploadBytes(storageRef, file);
+
+          const firebaseFileURL = await getDownloadURL(storageRef);
+          body.photo = firebaseFileURL;
+
+          const newPlayer = await Player.create(body);
+
+          const headerAuthorization = req.header("authorization");
+          const token = headerAuthorization.replace("Bearer ", "");
+          const { username } = jwt.decode(token);
+
+          const user = await User.findOne({ username });
+          user.players.push(newPlayer);
+          await user.save();
+
+          res.status(201).json(newPlayer);
+          resolve();
+        }
+      });
+    } catch (error) {
+      fs.unlink(path.join("uploads", req.file.filename), () => {
+        error.code = 400;
         next(error);
-      }
-    });
-    fs.readFile(newFileName, async (error, file) => {
-      if (error) {
-        next(error);
-      } else {
-        const storageRef = ref(storage, body.name);
-        await uploadBytes(storageRef, file);
-        const firebaseFileURL = await getDownloadURL(storageRef);
-        body.photo = firebaseFileURL;
-        const newPlayer = await Player.create(body);
-        const headerAuthorization = req.header("authorization");
-        const token = headerAuthorization.replace("Bearer ", "");
-        const { username } = jwt.decode(token);
-
-        const user = await User.findOne({ username });
-        user.players.push(newPlayer);
-        await user.save();
-
-        res.status(201).json(newPlayer);
-      }
-    });
-  } catch (error) {
-    fs.unlink(path.join("uploads", req.file.filename), () => {
+        resolve();
+      });
+      error.message = "Error, can't create the player";
       error.code = 400;
       next(error);
-    });
-    error.message = "Error, can't create the player";
-    error.code = 400;
-    next(error);
-  }
-};
+      resolve();
+    }
+  });
 
 const deletePlayer = async (req, res, next) => {
   try {
