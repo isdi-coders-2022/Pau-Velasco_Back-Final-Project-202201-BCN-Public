@@ -15,15 +15,14 @@ let token;
 jest.mock("firebase/storage", () => ({
   getStorage: () => "holaa",
   ref: () => {},
-  getDownloadURL: () => "download.url",
-  uploadBytes: () => {},
+  getDownloadURL: async () => "download.url",
+  uploadBytes: async () => {},
 }));
 
 beforeAll(async () => {
   database = await MongoMemoryServer.create();
   const uri = database.getUri();
   await databaseConnect(uri);
-  jest.resetAllMocks();
 });
 
 let registeredUsername;
@@ -100,10 +99,10 @@ describe("Given a createPlayer controller", () => {
         id: "12",
         players: [ObjectID("123456789012"), ObjectID("234567890123")],
       };
-      const res = {};
-      res.status = jest.fn().mockReturnThis();
-      res.json = jest.fn();
-      res.elfary = jest.fn();
+      const res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      };
 
       const req = {
         header: jest.fn().mockReturnValue(`Bearer ${token}`),
