@@ -105,6 +105,12 @@ describe("Given a createPlayer controller", () => {
         json: jest.fn(),
       };
 
+      jest
+        .spyOn(fs, "rename")
+        .mockImplementation((oldpath, newpath, callback) => {
+          callback();
+        });
+
       const req = {
         header: jest.fn().mockReturnValue(`Bearer ${token}`),
         body: newPlayer,
@@ -167,14 +173,76 @@ describe("Given a createPlayer controller", () => {
     });
   });
 
-  describe("When it receives a request with a wrong player", () => {
-    test("Then it should return an error", async () => {
+  describe("When it receives a request with file and no player on body", () => {
+    test("Then it should call next with an error", async () => {
+      const newFile = {
+        fieldname: "photo",
+        originalname: "cristianito.jpeg",
+        encoding: "7bit",
+        mimetype: "image/jpeg",
+        destination: "uploads/",
+        filename: "93ec034d18753a982e662bc2fdf9a584",
+        path: "uploads/93ec034d18753a982e662bc2fdf9a584",
+        size: 8750,
+      };
+
+      const req = {
+        header: jest.fn().mockReturnValue(`Bearer ${token}`),
+        file: newFile,
+      };
       const res = {
         json: jest.fn(),
       };
       const next = jest.fn();
 
-      await createPlayer(null, res, next);
+      jest.spyOn(fs, "unlink").mockImplementation((path, callback) => {
+        callback();
+      });
+
+      await createPlayer(req, res, next);
+
+      expect(next).toHaveBeenCalled();
+    });
+  });
+
+  describe("When it has an erro when rename the file", () => {
+    test("Then it should call the next method with an error", async () => {
+      const newPlayer = {
+        name: "Cristiano",
+        number: 7,
+        goals: 21,
+        assists: 3,
+        yellowCards: 4,
+        redCards: 1,
+        totalMatches: 21,
+        position: "Alero",
+        id: "1",
+      };
+      const newFile = {
+        fieldname: "photo",
+        originalname: "cristianito.jpeg",
+        encoding: "7bit",
+        mimetype: "image/jpeg",
+        destination: "uploads/",
+        filename: "93ec034d18753a982e662bc2fdf9a584",
+        path: "uploads/93ec034d18753a982e662bc2fdf9a584",
+        size: 8750,
+      };
+
+      const req = {
+        header: jest.fn().mockReturnValue(`Bearer ${token}`),
+        body: newPlayer,
+        file: newFile,
+      };
+      const next = jest.fn();
+
+      jest
+        .spyOn(fs, "rename")
+        .mockImplementation((oldpath, newpath, callback) => {
+          callback("error");
+        });
+
+      await createPlayer(req, null, next);
 
       expect(next).toHaveBeenCalled();
     });

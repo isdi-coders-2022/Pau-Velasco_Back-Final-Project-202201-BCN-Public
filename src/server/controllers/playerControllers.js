@@ -33,6 +33,7 @@ const createPlayer = async (req, res, next) =>
       fs.rename(oldFileName, newFileName, (error) => {
         if (error) {
           next(error);
+          resolve();
         }
       });
 
@@ -43,13 +44,16 @@ const createPlayer = async (req, res, next) =>
         } else {
           const storageRef = ref(storage, body.name);
           await uploadBytes(storageRef, file);
+
           const firebaseFileURL = await getDownloadURL(storageRef);
           body.photo = firebaseFileURL;
 
           const newPlayer = await Player.create(body);
+
           const headerAuthorization = req.header("authorization");
           const token = headerAuthorization.replace("Bearer ", "");
           const { username } = jwt.decode(token);
+
           const user = await User.findOne({ username });
           user.players.push(newPlayer);
           await user.save();
@@ -62,10 +66,12 @@ const createPlayer = async (req, res, next) =>
       fs.unlink(path.join("uploads", req.file.filename), () => {
         error.code = 400;
         next(error);
+        resolve();
       });
       error.message = "Error, can't create the player";
       error.code = 400;
       next(error);
+      resolve();
     }
   });
 
