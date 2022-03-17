@@ -271,6 +271,47 @@ describe("Given a updoadPlayer controller", () => {
       expect(res.json).toHaveBeenCalled();
     });
   });
+
+  describe("When it's instantiated without a player", () => {
+    test("Then it should call the next method with an error", async () => {
+      const newFile = {
+        fieldname: "photo",
+        originalname: "cristianito.jpeg",
+        encoding: "7bit",
+        mimetype: "image/jpeg",
+        destination: "uploads/",
+        filename: "93ec034d18753a982e662bc2fdf9a584",
+        path: "uploads/93ec034d18753a982e662bc2fdf9a584",
+        size: 8750,
+      };
+
+      const res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      };
+
+      jest
+        .spyOn(fs, "rename")
+        .mockImplementation((oldpath, newpath, callback) => {
+          callback();
+        });
+
+      const req = {
+        file: newFile,
+        params: "1452334",
+      };
+      const next = jest.fn();
+      Player.findByIdAndUpdate = jest.fn().mockResolvedValue("123");
+
+      jest.spyOn(fs, "readFile").mockImplementation((file, callback) => {
+        callback(null, req.file);
+      });
+
+      await updatePlayer(req, res, next);
+
+      expect(next).toHaveBeenCalled();
+    });
+  });
 });
 
 describe("Given a createPlayer controller", () => {
