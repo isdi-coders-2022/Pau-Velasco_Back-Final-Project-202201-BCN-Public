@@ -1,3 +1,4 @@
+/* eslint-disable no-new */
 const jwt = require("jsonwebtoken");
 const { initializeApp } = require("firebase/app");
 const {
@@ -75,52 +76,64 @@ const createPlayer = async (req, res, next) =>
     }
   });
 
-const updatePlayer = async (req, res, next) => {
-  try {
-    const player = req.body;
-    const { id } = req.params;
+const updatePlayer = async (req, res, next) =>
+  new Promise((resolve) => {
+    try {
+      if (req.file) {
+        const player = req.body;
+        const { id } = req.params;
 
-    if (req.file) {
-      const oldFileName = path.join("uploads", req.file.filename);
-      const newFileName = path.join("uploads", req.body.name);
-      fs.rename(oldFileName, newFileName, (error) => {
-        if (error) {
-          next(error);
-        }
-      });
-      fs.readFile(newFileName, async (error, file) => {
-        if (error) {
-          next(error);
-        } else {
-          const storageRef = ref(storage, player.name);
-          await uploadBytes(storageRef, file);
+        const oldFileName = path.join("uploads", req.file.filename);
+        const newFileName = path.join("uploads", req.body.name);
+        fs.rename(oldFileName, newFileName, (error) => {
+          if (error) {
+            next(error);
+            resolve();
+          }
+        });
 
-          const firebaseFileURL = await getDownloadURL(storageRef);
-          player.photo = firebaseFileURL;
+        fs.readFile(newFileName, async (error, file) => {
+          if (error) {
+            next(error);
+            resolve();
+          } else {
+            const storageRef = ref(storage, player.name);
+            await uploadBytes(storageRef, file);
+
+            const firebaseFileURL = await getDownloadURL(storageRef);
+            player.photo = firebaseFileURL;
+            const updatedPlayer = await Player.findByIdAndUpdate(id, player, {
+              new: true,
+            });
+
+            res.status(200).json(updatedPlayer);
+            resolve();
+          }
+        });
+      } else {
+        (async () => {
+          const player = req.body;
+          const { id } = req.params;
+
           const updatedPlayer = await Player.findByIdAndUpdate(id, player, {
             new: true,
           });
 
           res.status(200).json(updatedPlayer);
-        }
+        })();
+      }
+    } catch (error) {
+      fs.unlink(path.join("uploads", req.file.filename), () => {
+        error.code = 400;
+        next(error);
+        resolve();
       });
-    } else {
-      const updatedPlayer = await Player.findByIdAndUpdate(id, player, {
-        new: true,
-      });
-
-      res.status(200).json(updatedPlayer);
-    }
-  } catch (error) {
-    fs.unlink(path.join("uploads", req.file.filename), () => {
+      error.message = "Error, can't create the player";
       error.code = 400;
       next(error);
-    });
-    error.message = "Error, can't create the player";
-    error.code = 400;
-    next(error);
-  }
-};
+      resolve();
+    }
+  });
 
 const deletePlayer = async (req, res, next) => {
   try {
