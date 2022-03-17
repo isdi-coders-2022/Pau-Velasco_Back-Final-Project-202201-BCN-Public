@@ -62,35 +62,6 @@ afterEach(async () => {
   await User.deleteMany({});
 });
 
-// describe("Given a player/create/ endpoint", () => {
-//   describe("When it recevies a POST request with a new user", () => {
-//     test("Then it should create the new user", async () => {
-//       const newPlayer = {
-//         name: "Benzema",
-//         number: 7,
-//         goals: 21,
-//         assists: 3,
-//         yellowCards: 4,
-//         redCards: 1,
-//         totalMatches: 21,
-//         position: "Pívote",
-//         photo:
-//           "https://img.uefa.com/imgml/TP/players/1/2022/324x324/63706.jpg?imwidth=36",
-//       };
-//       jest.mock("fs");
-
-//       const { body } = await request(app)
-//         .post("/player/create-player")
-//         .set("authorization", `Bearer ${token1}`)
-//         .send(newPlayer)
-//         .expect(201);
-
-//       const { id, ...expectedBody } = body;
-//       expect(expectedBody).toEqual(newPlayer);
-//     });
-//   });
-// });
-
 describe("Given a player/delete/ endpoint", () => {
   describe("When it receives a DELETE request with an id", () => {
     test("Then it should delete the player", async () => {

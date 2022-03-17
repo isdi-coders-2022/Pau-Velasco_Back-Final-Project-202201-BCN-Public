@@ -75,6 +75,43 @@ const createPlayer = async (req, res, next) =>
     }
   });
 
+const updatePlayer = async (req, res, next) => {
+  const player = req.body;
+  const { id } = req.params;
+
+  if (req.file) {
+    const oldFileName = path.join("uploads", req.file.filename);
+    const newFileName = path.join("uploads", req.body.name);
+    fs.rename(oldFileName, newFileName, (error) => {
+      if (error) {
+        next(error);
+      }
+    });
+    fs.readFile(newFileName, async (error, file) => {
+      if (error) {
+        next(error);
+      } else {
+        const storageRef = ref(storage, player.name);
+        await uploadBytes(storageRef, file);
+
+        const firebaseFileURL = await getDownloadURL(storageRef);
+        player.photo = firebaseFileURL;
+        const updatedPlayer = await Player.findByIdAndUpdate(id, player, {
+          new: true,
+        });
+
+        res.status(200).json(updatedPlayer);
+      }
+    });
+  } else {
+    const updatedPlayer = await Player.findByIdAndUpdate(id, player, {
+      new: true,
+    });
+
+    res.status(200).json(updatedPlayer);
+  }
+};
+
 const deletePlayer = async (req, res, next) => {
   try {
     const headerAuthorization = req.header("authorization");
@@ -109,4 +146,4 @@ const deletePlayer = async (req, res, next) => {
   }
 };
 
-module.exports = { createPlayer, deletePlayer };
+module.exports = { createPlayer, deletePlayer, updatePlayer };
