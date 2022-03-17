@@ -12,6 +12,6 @@ const upload = multer({ dest: "uploads/" });
 
 router.post("/create-player", auth, upload.single("photo"), createPlayer);
 router.delete("/delete/:id", auth, deletePlayer);
-router.put("/update/:id", upload.single("photo"), updatePlayer);
+router.put("/update/:id", auth, upload.single("photo"), updatePlayer);
 
 module.exports = router;
