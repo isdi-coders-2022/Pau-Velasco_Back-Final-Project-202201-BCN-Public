@@ -175,6 +175,59 @@ describe("Given a updoadPlayer controller", () => {
       expect(next).toHaveBeenCalled();
     });
   });
+
+  describe("When the readFile function throw an error", () => {
+    test("Then it should call next method", async () => {
+      const newPlayer = {
+        name: "Benzema",
+        number: 7,
+        goals: 21,
+        assists: 3,
+        yellowCards: 4,
+        redCards: 1,
+        totalMatches: 21,
+        position: "Pívote",
+        id: "1",
+      };
+      const newFile = {
+        fieldname: "photo",
+        originalname: "cristianito.jpeg",
+        encoding: "7bit",
+        mimetype: "image/jpeg",
+        destination: "uploads/",
+        filename: "93ec034d18753a982e662bc2fdf9a584",
+        path: "uploads/93ec034d18753a982e662bc2fdf9a584",
+        size: 8750,
+      };
+
+      const res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      };
+
+      jest
+        .spyOn(fs, "rename")
+        .mockImplementation((oldpath, newpath, callback) => {
+          callback();
+        });
+
+      const req = {
+        body: newPlayer,
+        file: newFile,
+        params: "1",
+      };
+      const next = jest.fn();
+      Player.findByIdAndUpdate = jest.fn().mockResolvedValue("123");
+
+      jest.spyOn(fs, "readFile").mockImplementation((file, callback) => {
+        callback("error");
+      });
+
+      await updatePlayer(req, res, next);
+
+      expect(next).toHaveBeenCalled();
+    });
+  });
 });
 
 describe("Given a createPlayer controller", () => {
