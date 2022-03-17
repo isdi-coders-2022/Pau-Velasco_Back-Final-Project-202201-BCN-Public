@@ -228,6 +228,49 @@ describe("Given a updoadPlayer controller", () => {
       expect(next).toHaveBeenCalled();
     });
   });
+
+  describe("When it receives a req with an user but doesn't has file", () => {
+    test("Then it should call json method with the new player", async () => {
+      const newPlayer = {
+        name: "Benzema",
+        number: 7,
+        goals: 21,
+        assists: 3,
+        yellowCards: 4,
+        redCards: 1,
+        totalMatches: 33,
+        position: "Cierre",
+        id: "1",
+      };
+
+      const res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      };
+
+      jest
+        .spyOn(fs, "rename")
+        .mockImplementation((oldpath, newpath, callback) => {
+          callback();
+        });
+
+      const req = {
+        body: newPlayer,
+        file: null,
+        params: "1",
+      };
+      const next = jest.fn();
+      Player.findByIdAndUpdate = jest.fn().mockResolvedValue("123");
+
+      jest.spyOn(fs, "readFile").mockImplementation((file, callback) => {
+        callback(null, req.file);
+      });
+
+      await updatePlayer(req, res, next);
+
+      expect(res.json).toHaveBeenCalled();
+    });
+  });
 });
 
 describe("Given a createPlayer controller", () => {

@@ -120,6 +120,7 @@ const updatePlayer = async (req, res, next) =>
           });
 
           res.status(200).json(updatedPlayer);
+          resolve();
         })();
       }
     } catch (error) {
