@@ -7,7 +7,11 @@ const { default: ObjectID } = require("bson-objectid");
 const fs = require("fs");
 const User = require("../../database/models/user");
 const databaseConnect = require("../../database/index");
-const { deletePlayer, createPlayer } = require("./playerControllers");
+const {
+  deletePlayer,
+  createPlayer,
+  updatePlayer,
+} = require("./playerControllers");
 const Player = require("../../database/models/player");
 
 let database;
@@ -67,6 +71,247 @@ afterEach(async () => {
 afterAll(async () => {
   await mongoose.connection.close();
   await database.stop();
+});
+
+describe("Given a updoadPlayer controller", () => {
+  describe("When it receives a req with an user", () => {
+    test("Then it should call json method with the new player", async () => {
+      const newPlayer = {
+        name: "Benzema",
+        number: 7,
+        goals: 21,
+        assists: 3,
+        yellowCards: 4,
+        redCards: 1,
+        totalMatches: 21,
+        position: "Pívote",
+        id: "1",
+      };
+      const newFile = {
+        fieldname: "photo",
+        originalname: "cristianito.jpeg",
+        encoding: "7bit",
+        mimetype: "image/jpeg",
+        destination: "uploads/",
+        filename: "93ec034d18753a982e662bc2fdf9a584",
+        path: "uploads/93ec034d18753a982e662bc2fdf9a584",
+        size: 8750,
+      };
+
+      const res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      };
+
+      jest
+        .spyOn(fs, "rename")
+        .mockImplementation((oldpath, newpath, callback) => {
+          callback();
+        });
+
+      const req = {
+        body: newPlayer,
+        file: newFile,
+        params: "1",
+      };
+      const next = jest.fn();
+      Player.findByIdAndUpdate = jest.fn().mockResolvedValue("123");
+
+      jest.spyOn(fs, "readFile").mockImplementation((file, callback) => {
+        callback(null, newFile);
+      });
+
+      await updatePlayer(req, res, next);
+
+      expect(res.json).toHaveBeenCalled();
+    });
+  });
+
+  describe("When the rename function throw an error", () => {
+    test("Then it should call next method", async () => {
+      const newPlayer = {
+        name: "Benzema",
+        number: 7,
+        goals: 21,
+        assists: 3,
+        yellowCards: 4,
+        redCards: 1,
+        totalMatches: 21,
+        position: "Pívote",
+        id: "1",
+      };
+      const newFile = {
+        fieldname: "photo",
+        originalname: "cristianito.jpeg",
+        encoding: "7bit",
+        mimetype: "image/jpeg",
+        destination: "uploads/",
+        filename: "93ec034d18753a982e662bc2fdf9a584",
+        path: "uploads/93ec034d18753a982e662bc2fdf9a584",
+        size: 8750,
+      };
+
+      const res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      };
+
+      jest
+        .spyOn(fs, "rename")
+        .mockImplementation((oldpath, newpath, callback) => {
+          callback("error");
+        });
+
+      const req = {
+        body: newPlayer,
+        file: newFile,
+        params: "1",
+      };
+      const next = jest.fn();
+      Player.findByIdAndUpdate = jest.fn().mockResolvedValue("123");
+
+      await updatePlayer(req, res, next);
+
+      expect(next).toHaveBeenCalled();
+    });
+  });
+
+  describe("When the readFile function throw an error", () => {
+    test("Then it should call next method", async () => {
+      const newPlayer = {
+        name: "Benzema",
+        number: 7,
+        goals: 21,
+        assists: 3,
+        yellowCards: 4,
+        redCards: 1,
+        totalMatches: 21,
+        position: "Pívote",
+        id: "1",
+      };
+      const newFile = {
+        fieldname: "photo",
+        originalname: "cristianito.jpeg",
+        encoding: "7bit",
+        mimetype: "image/jpeg",
+        destination: "uploads/",
+        filename: "93ec034d18753a982e662bc2fdf9a584",
+        path: "uploads/93ec034d18753a982e662bc2fdf9a584",
+        size: 8750,
+      };
+
+      const res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      };
+
+      jest
+        .spyOn(fs, "rename")
+        .mockImplementation((oldpath, newpath, callback) => {
+          callback();
+        });
+
+      const req = {
+        body: newPlayer,
+        file: newFile,
+        params: "1",
+      };
+      const next = jest.fn();
+      Player.findByIdAndUpdate = jest.fn().mockResolvedValue("123");
+
+      jest.spyOn(fs, "readFile").mockImplementation((file, callback) => {
+        callback("error");
+      });
+
+      await updatePlayer(req, res, next);
+
+      expect(next).toHaveBeenCalled();
+    });
+  });
+
+  describe("When it receives a req with an user but doesn't has file", () => {
+    test("Then it should call json method with the new player", async () => {
+      const newPlayer = {
+        name: "Benzema",
+        number: 7,
+        goals: 21,
+        assists: 3,
+        yellowCards: 4,
+        redCards: 1,
+        totalMatches: 33,
+        position: "Cierre",
+        id: "1",
+      };
+
+      const res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      };
+
+      jest
+        .spyOn(fs, "rename")
+        .mockImplementation((oldpath, newpath, callback) => {
+          callback();
+        });
+
+      const req = {
+        body: newPlayer,
+        file: null,
+        params: "1",
+      };
+      const next = jest.fn();
+      Player.findByIdAndUpdate = jest.fn().mockResolvedValue("123");
+
+      jest.spyOn(fs, "readFile").mockImplementation((file, callback) => {
+        callback(null, req.file);
+      });
+
+      await updatePlayer(req, res, next);
+
+      expect(res.json).toHaveBeenCalled();
+    });
+  });
+
+  describe("When it's instantiated without a player", () => {
+    test("Then it should call the next method with an error", async () => {
+      const newFile = {
+        fieldname: "photo",
+        originalname: "cristianito.jpeg",
+        encoding: "7bit",
+        mimetype: "image/jpeg",
+        destination: "uploads/",
+        filename: "93ec034d18753a982e662bc2fdf9a584",
+        path: "uploads/93ec034d18753a982e662bc2fdf9a584",
+        size: 8750,
+      };
+
+      const res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      };
+
+      jest
+        .spyOn(fs, "rename")
+        .mockImplementation((oldpath, newpath, callback) => {
+          callback();
+        });
+
+      const req = {
+        file: newFile,
+        params: "1452334",
+      };
+      const next = jest.fn();
+      Player.findByIdAndUpdate = jest.fn().mockResolvedValue("123");
+
+      jest.spyOn(fs, "readFile").mockImplementation((file, callback) => {
+        callback(null, req.file);
+      });
+
+      await updatePlayer(req, res, next);
+
+      expect(next).toHaveBeenCalled();
+    });
+  });
 });
 
 describe("Given a createPlayer controller", () => {
