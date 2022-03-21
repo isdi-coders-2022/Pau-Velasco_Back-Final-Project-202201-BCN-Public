@@ -9,6 +9,7 @@ const {
 const auth = require("../middlewares/auth");
 const {
   createPlayerValidator,
+  deletePlayerValidator,
 } = require("../middlewares/validators/playerValidators");
 
 const router = express.Router();
@@ -21,7 +22,18 @@ router.post(
   upload.single("photo"),
   createPlayer
 );
-router.delete("/delete/:id", auth, deletePlayer);
-router.put("/update/:id", auth, upload.single("photo"), updatePlayer);
+router.delete(
+  "/delete/:id",
+  validate(deletePlayerValidator),
+  auth,
+  deletePlayer
+);
+router.put(
+  "/update/:id",
+  validate(createPlayerValidator),
+  auth,
+  upload.single("photo"),
+  updatePlayer
+);
 
 module.exports = router;

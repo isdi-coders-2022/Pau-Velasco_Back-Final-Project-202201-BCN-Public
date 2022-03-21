@@ -14,4 +14,10 @@ const createPlayerValidator = {
   }),
 };
 
-module.exports = { createPlayerValidator };
+const deletePlayerValidator = {
+  body: Joi.object({
+    id: Joi.string().required,
+  }),
+};
+
+module.exports = { createPlayerValidator, deletePlayerValidator };
