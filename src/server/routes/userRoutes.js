@@ -1,4 +1,5 @@
 const express = require("express");
+const { validate } = require("express-validation");
 const {
   loginUser,
   loadUserPlayers,
@@ -6,11 +7,15 @@ const {
   registerUser,
 } = require("../controllers/userControllers");
 const auth = require("../middlewares/auth");
+const {
+  createUserValidator,
+  loginUserValidator,
+} = require("../middlewares/validators/userValidators");
 
 const router = express.Router();
 
-router.post("/login", loginUser);
-router.post("/register", registerUser);
+router.post("/login", validate(loginUserValidator), loginUser);
+router.post("/register", validate(createUserValidator), registerUser);
 router.get("/load-user-players", auth, loadUserPlayers);
 router.get("/load-user", auth, loadUser);
 
