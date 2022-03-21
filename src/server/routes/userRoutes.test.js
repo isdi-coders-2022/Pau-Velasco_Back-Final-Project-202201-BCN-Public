@@ -206,7 +206,7 @@ describe("Given a /load-user-players endpoint", () => {
       const expectedError = { error: true, message: "Token missing" };
 
       const { body } = await request(app)
-        .post("/user/load-user-players")
+        .get("/user/load-user-players")
         .set("authorization", "")
         .expect(401);
 
@@ -218,7 +218,7 @@ describe("Given a /load-user-players endpoint", () => {
 
 describe("Given a /register endpoint", () => {
   describe("When it receives a request with a POST method and a new use on the body", () => {
-    test.only("Then it should respond with a 201 status and the new user", async () => {
+    test("Then it should respond with a 201 status and the new user", async () => {
       const newUser = {
         username: "hola",
         teamName: "hola",
@@ -231,6 +231,27 @@ describe("Given a /register endpoint", () => {
         .expect(201);
 
       expect(body).toHaveProperty("username", newUser.username);
+    });
+  });
+
+  describe("When it receives a request with an existing username", () => {
+    test("Then it should return a 409 status and 'This username already exists' error message", async () => {
+      const expectedError = {
+        error: true,
+        message: "This username already exists",
+      };
+      const newUser = {
+        username: "user1",
+        teamName: "hola",
+        password: "hola",
+      };
+
+      const { body } = await request(app)
+        .post("/user/register")
+        .send(newUser)
+        .expect(409);
+
+      expect(body).toEqual(expectedError);
     });
   });
 });
