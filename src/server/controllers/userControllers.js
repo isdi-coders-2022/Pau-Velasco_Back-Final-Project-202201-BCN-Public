@@ -38,15 +38,6 @@ const loadUser = async (req, res) => {
   res.json(user);
 };
 
-const loadUserPlayers = async (req, res) => {
-  const headerAuthorization = req.header("authorization");
-  const token = headerAuthorization.replace("Bearer ", "");
-  const { username } = jwt.decode(token);
-  const user = await User.findOne({ username }).populate("players");
-
-  res.json(user.players);
-};
-
 const registerUser = async (req, res) => {
   const user = req.body;
 
@@ -59,6 +50,15 @@ const registerUser = async (req, res) => {
   const newUser = await User.create(user);
 
   res.status(201).json(newUser);
+};
+
+const loadUserPlayers = async (req, res) => {
+  const headerAuthorization = req.header("authorization");
+  const token = headerAuthorization.replace("Bearer ", "");
+  const { username } = jwt.decode(token);
+  const user = await User.findOne({ username }).populate("players");
+
+  res.json(user.players);
 };
 
 module.exports = { loginUser, loadUserPlayers, loadUser, registerUser };

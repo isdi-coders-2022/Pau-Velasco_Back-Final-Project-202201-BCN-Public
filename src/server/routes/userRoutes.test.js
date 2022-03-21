@@ -206,12 +206,31 @@ describe("Given a /load-user-players endpoint", () => {
       const expectedError = { error: true, message: "Token missing" };
 
       const { body } = await request(app)
-        .get("/user/load-user-players")
+        .post("/user/load-user-players")
         .set("authorization", "")
         .expect(401);
 
       expect(body).toHaveProperty("error", expectedError.error);
       expect(body).toHaveProperty("message", expectedError.message);
+    });
+  });
+});
+
+describe("Given a /register endpoint", () => {
+  describe("When it receives a request with a POST method and a new use on the body", () => {
+    test.only("Then it should respond with a 201 status and the new user", async () => {
+      const newUser = {
+        username: "hola",
+        teamName: "hola",
+        password: "hola",
+      };
+
+      const { body } = await request(app)
+        .post("/user/register")
+        .send(newUser)
+        .expect(201);
+
+      expect(body).toHaveProperty("username", newUser.username);
     });
   });
 });
