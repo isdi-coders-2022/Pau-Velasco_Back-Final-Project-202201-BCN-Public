@@ -39,7 +39,7 @@ const loadUser = async (req, res) => {
 };
 
 const registerUser = async (req, res, next) => {
-  const { username } = req.body;
+  const { username, password } = req.body;
 
   const findUser = await User.findOne({ username });
 
@@ -48,7 +48,8 @@ const registerUser = async (req, res, next) => {
     error.code = 409;
     return next(error);
   }
-
+  const encryptedPassword = await bcrypt.hash(password, 10);
+  req.body.password = encryptedPassword;
   const newUser = await User.create(req.body);
 
   return res.status(201).json(newUser);
