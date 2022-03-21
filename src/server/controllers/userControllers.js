@@ -38,18 +38,20 @@ const loadUser = async (req, res) => {
   res.json(user);
 };
 
-const registerUser = async (req, res) => {
-  const user = req.body;
+const registerUser = async (req, res, next) => {
+  const { username } = req.body;
 
-  const findUser = User.findOne(req.username);
+  const findUser = await User.findOne({ username });
+
   if (findUser) {
     const error = new Error("This username already exists");
     error.code = 409;
+    return next(error);
   }
 
-  const newUser = await User.create(user);
+  const newUser = await User.create(req.body);
 
-  res.status(201).json(newUser);
+  return res.status(201).json(newUser);
 };
 
 const loadUserPlayers = async (req, res) => {
