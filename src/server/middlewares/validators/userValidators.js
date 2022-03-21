@@ -2,8 +2,8 @@ const { Joi } = require("express-validation");
 
 const createUserValidator = {
   body: Joi.object({
-    username: Joi.string().hex().length(12).required(),
-    passwod: Joi.string().required(),
+    username: Joi.string().max(12).required(),
+    password: Joi.string().required(),
     teamName: Joi.string().required(),
   }),
 };
