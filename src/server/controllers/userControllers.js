@@ -38,6 +38,22 @@ const loadUser = async (req, res) => {
   res.json(user);
 };
 
+const registerUser = async (req, res, next) => {
+  const { username } = req.body;
+
+  const findUser = await User.findOne({ username });
+
+  if (findUser) {
+    const error = new Error("This username already exists");
+    error.code = 409;
+    return next(error);
+  }
+
+  const newUser = await User.create(req.body);
+
+  return res.status(201).json(newUser);
+};
+
 const loadUserPlayers = async (req, res) => {
   const headerAuthorization = req.header("authorization");
   const token = headerAuthorization.replace("Bearer ", "");
@@ -47,4 +63,4 @@ const loadUserPlayers = async (req, res) => {
   res.json(user.players);
 };
 
-module.exports = { loginUser, loadUserPlayers, loadUser };
+module.exports = { loginUser, loadUserPlayers, loadUser, registerUser };

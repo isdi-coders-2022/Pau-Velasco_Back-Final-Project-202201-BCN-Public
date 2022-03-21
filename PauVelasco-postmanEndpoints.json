@@ -1,0 +1,343 @@
+{
+  "info": {
+    "_postman_id": "928c7572-8d43-4935-81f4-0409f49ab8ec",
+    "name": "New Collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Login",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "multipart/form-data",
+            "type": "text",
+            "disabled": true
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"username\": \"pau\",\n    \"password\": \"pau\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{origin}}user/login",
+          "host": ["{{origin}}user"],
+          "path": ["login"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Load-User-Players",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InBhdSIsImlkIjoiNjIyNzE5MDYyYjJhMDIzNzQ1ODYxZDUyIiwiaWF0IjoxNjQ2ODM5MzQ5fQ.UENZ3BT8sqCZ_VwqSnMJ5Ape2h4B-DtQoP6WwuMx3ZE",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{origin}}user/load-user-players",
+          "host": ["{{origin}}user"],
+          "path": ["load-user-players"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Create Player",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InBhdSIsImlkIjoiNjIyNzE5MDYyYjJhMDIzNzQ1ODYxZDUyIiwiaWF0IjoxNjQ2ODM1ODEzfQ.SjA-pGMQWfRLTPk45sB7YW_eOa1DmK_8CWwS8ANHixg",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text",
+            "disabled": true
+          },
+          {
+            "key": "",
+            "value": "",
+            "type": "text",
+            "disabled": true
+          },
+          {
+            "key": "",
+            "value": "",
+            "type": "text",
+            "disabled": true
+          },
+          {
+            "key": "",
+            "value": "",
+            "type": "text",
+            "disabled": true
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "name",
+              "value": "Cristianitosuuno",
+              "type": "text"
+            },
+            {
+              "key": "photo",
+              "type": "file",
+              "src": "/Users/pauvelascogarrofe/Downloads/1_zzvdRmHGGXONZpuQ2FeqsQ (1).png"
+            },
+            {
+              "key": "number",
+              "value": "10",
+              "type": "text"
+            },
+            {
+              "key": "goals",
+              "value": "55",
+              "type": "text"
+            },
+            {
+              "key": "assists",
+              "value": "34",
+              "type": "text"
+            },
+            {
+              "key": "yellowCards",
+              "value": "2",
+              "type": "text"
+            },
+            {
+              "key": "redCards",
+              "value": "1",
+              "type": "text"
+            },
+            {
+              "key": "totalMatches",
+              "value": "45",
+              "type": "text"
+            },
+            {
+              "key": "position",
+              "value": "Cierre",
+              "type": "text"
+            },
+            {
+              "key": "",
+              "value": "",
+              "type": "text",
+              "disabled": true
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{origin}}player/create-player",
+          "host": ["{{origin}}player"],
+          "path": ["create-player"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Load User",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": ""
+        },
+        "url": {
+          "raw": "{{origin}}user/load-user",
+          "host": ["{{origin}}user"],
+          "path": ["load-user"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Delete Player",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InBhdSIsImlkIjoiNjIyNzE5MDYyYjJhMDIzNzQ1ODYxZDUyIiwiaWF0IjoxNjQ2ODM1ODEzfQ.SjA-pGMQWfRLTPk45sB7YW_eOa1DmK_8CWwS8ANHixg",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{origin}}player/delete/622dd7c94364af58891da135",
+          "host": ["{{origin}}player"],
+          "path": ["delete", "622dd7c94364af58891da135"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Update Player",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text",
+            "disabled": true
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "name",
+              "value": "CristianitoSuuu",
+              "type": "text"
+            },
+            {
+              "key": "number",
+              "value": "3",
+              "type": "text"
+            },
+            {
+              "key": "goals",
+              "value": "3",
+              "type": "text"
+            },
+            {
+              "key": "assists",
+              "value": "3",
+              "type": "text"
+            },
+            {
+              "key": "yellowCards",
+              "value": "3",
+              "type": "text"
+            },
+            {
+              "key": "redCards",
+              "value": "3",
+              "type": "text"
+            },
+            {
+              "key": "totalMatches",
+              "value": "3",
+              "type": "text"
+            },
+            {
+              "key": "position",
+              "value": "cierre",
+              "type": "text"
+            },
+            {
+              "key": "photo",
+              "type": "file",
+              "src": "/Users/pauvelascogarrofe/Downloads/istockphoto-1304912525-612x612.jpeg",
+              "disabled": true
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{origin}}player/update/62333f2cecbe002f262438d1",
+          "host": ["{{origin}}player"],
+          "path": ["update", "62333f2cecbe002f262438d1"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Register User",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"username\": \"holaa\",\n    \"password\": \"hola\",\n    \"teamName\": \"hola\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{origin}}user/register",
+          "host": ["{{origin}}user"],
+          "path": ["register"]
+        }
+      },
+      "response": []
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InBhdSIsImlkIjoiNjIyNzE5MDYyYjJhMDIzNzQ1ODYxZDUyIiwiaWF0IjoxNjQ2ODM1ODEzfQ.SjA-pGMQWfRLTPk45sB7YW_eOa1DmK_8CWwS8ANHixg",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "origin",
+      "value": "https://futsal-stats.onrender.com/",
+      "type": "string"
+    }
+  ]
+}
