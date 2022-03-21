@@ -47,4 +47,18 @@ const loadUserPlayers = async (req, res) => {
   res.json(user.players);
 };
 
-module.exports = { loginUser, loadUserPlayers, loadUser };
+const registerUser = async (req, res) => {
+  const user = req.body;
+
+  const findUser = User.findOne(req.username);
+  if (findUser) {
+    const error = new Error("This username already exists");
+    error.code = 409;
+  }
+
+  const newUser = await User.create(user);
+
+  res.status(201).json(newUser);
+};
+
+module.exports = { loginUser, loadUserPlayers, loadUser, registerUser };
